@@ -44,21 +44,51 @@ app.UseHttpsRedirection();
 
 // get all rooms
 
-// get room by id with roomates
+app.MapGet("/api/rooms", () =>
+{
+    return rooms;
+});
 
-// update room 
+// get room by id, return the room object with all info, including roomates
+app.MapGet("/api/rooms/{id}", (int id) =>
+{
+    Room room = rooms.FirstOrDefault(room => room.Id == id);
+    foreach (Roommate roommate in roommates)
+    {
+        if (room.Id == roommate.RoomId)
+        {
+            //assign vaiable the name of the room the roomates in
+            room.Roommates.Add(roommate);
+        }
+    }
+    return room;
+});
+// update room
 
 // delete a room
 
 // get roommates
-
+app.MapGet("/api/roommates", () =>
+{
+    return roommates;
+});
 // get roommate with chores
 
-// add a roommate 
+// add a roommate
 
 // assign a roommate to a chore
 
 // calculate rent for each roommate and return a report
+
+
+// First
+// FirstOrDefault
+// Where
+// Select
+// Max
+// Min
+// Single
+// SingleOrDefault
 
 
 app.Run();
