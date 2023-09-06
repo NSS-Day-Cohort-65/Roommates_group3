@@ -11,15 +11,15 @@ List<Room> rooms = new List<Room>
 List<Roommate> roommates = new List<Roommate>
 {
     new Roommate {Id = 1, FirstName = "Nic", LastName = "Lahde", MovedInDate = new DateTime(2021, 1, 25), RentPortion = 20, RoomId = 2 },
-    new Roommate {Id = 1, FirstName = "Alex", LastName = "Bishop", MovedInDate = new DateTime(2021, 2, 15), RentPortion = 15, RoomId = 1 },
-    new Roommate {Id = 1, FirstName = "Dan", LastName = "Brady", MovedInDate = new DateTime(2021, 2, 10), RentPortion = 10, RoomId = 3 },
+    new Roommate {Id = 2, FirstName = "Alex", LastName = "Bishop", MovedInDate = new DateTime(2021, 2, 15), RentPortion = 15, RoomId = 1 },
+    new Roommate {Id = 3, FirstName = "Dan", LastName = "Brady", MovedInDate = new DateTime(2021, 2, 10), RentPortion = 10, RoomId = 3 },
 };
 
 List<Chore> chores = new List<Chore>
 {
     new Chore {Id = 1, Name = "Take Out Trash", RoommateId = 1 },
     new Chore {Id = 2, Name = "Vacuum", RoommateId = 2 },
-    new Chore {Id = 2, Name = "Do Dishes"},
+    new Chore {Id = 3, Name = "Do Dishes"},
 };
 
 
@@ -53,20 +53,31 @@ app.MapGet("/api/rooms", () =>
 app.MapGet("/api/rooms/{id}", (int id) =>
 {
     Room room = rooms.FirstOrDefault(room => room.Id == id);
-    foreach (Roommate roommate in roommates)
+    if (room == null)
     {
-        if (room.Id == roommate.RoomId)
-        {
-            //assign vaiable the name of the room the roomates in
-            room.Roommates.Add(roommate);
-        }
+        return Results.NotFound();
     }
-    return room;
+    room.Roommates = roommates.Where(rm => rm.RoomId == room.Id).ToList();
+    return Results.Ok(room);
 });
 // update room
 
-// delete a room
 
+
+// delete a room
+app.MapDelete("/api/rooms/{id}", (int id) =>
+{
+    //create a variable to store the item to be deleted
+    Room itemToDelete = rooms.FirstOrDefault(dr => dr.Id == id);
+    //createa condition to check if the id matches
+    if (itemToDelete == null)
+    {
+        return Results.NotFound();
+    }
+    rooms.Remove(itemToDelete);
+    return Results.Ok();
+}
+);
 // get roommates
 app.MapGet("/api/roommates", () =>
 {
@@ -90,5 +101,8 @@ app.MapGet("/api/roommates", () =>
 // Single
 // SingleOrDefault
 
+
+
+//setting up custom get / set on models. How Do?
 
 app.Run();
