@@ -61,7 +61,18 @@ app.MapGet("/api/rooms/{id}", (int id) =>
     return Results.Ok(room);
 });
 // update room
+app.MapPut("/api/rooms/{id}", (int id, Room roomObj) =>
+{
+    Room foundRoom = rooms.FirstOrDefault(r => r.Id == id);
+    if (foundRoom == null)
+    {
+        return Results.NotFound();
+    }
+    int index = rooms.IndexOf(foundRoom);
+    rooms[index] = roomObj;
 
+    return Results.Ok(rooms[index]);
+});
 
 
 // delete a room
@@ -84,6 +95,22 @@ app.MapGet("/api/roommates", () =>
     return roommates;
 });
 // get roommate with chores
+app.MapGet("/api/roommates/{id}", (int id) =>
+{
+
+    Roommate foundRoommate = roommates.FirstOrDefault(r => r.Id == id);
+
+    if( foundRoommate == null){
+        return Results.NotFound();
+    }
+    
+    foundRoommate.Chores = chores.Where(c => c.RoommateId == foundRoommate.Id).ToList();
+
+    return Results.Ok(foundRoommate);
+}
+
+);
+
 
 // add a roommate
 
